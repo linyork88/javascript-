@@ -9,12 +9,27 @@
     .visual{
         background-image: url(背景.png);
     }
+    @media(max-width:500px){
+        .visual{
+            width: 95%;
+        }
+    }
     .content{
         display: flex;
         position: 0 0;
         align-items: center;
         justify-content: center;
         background-color: blanchedalmond;
+    }
+    @media(max-width:500px){
+    /*螢幕尺寸小於500px的時候，額外套用這個區塊的設定*/
+        .content{
+            flex-wrap: wrap;/*讓flexbox中的區塊可以往下掉*/
+        }
+        .content>.right{
+        width: 95%
+        
+        }
     }
     .header{
         font-size: 36px;
