@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>javascript 進階作業</title>
+    <style>
+    .visual{
+        background-image: url(背景.png);
+    }
+    .content{
+        display: flex;
+        position: 0 0;
+        align-items: center;
+        justify-content: center;
+        background-color: blanchedalmond;
+    }
+    .header{
+        font-size: 36px;
+        font-weight: bolder;
+        font-family: "微軟正黑體";
+        text-align: center;
+        background-color: rgb(238, 190, 143);
+        padding: 15px ;
+        margin: 0px ;
+    }
+    .content>.right{
+        font-weight: bolder;
+        font-family: "微軟正黑體";
+    }
+    .footer{
+        background-color: #223344;
+        color: white;
+        font-size: 12px;
+        text-align: center;
+        padding: 12px 0px;
+        font-family: "微軟正黑體";
+    }
+    </style>
+</head>
+<body>
+    <h3 class="header">蠟筆小新露屁屁外星人</h3>
+    <div class="content">
+        <canvas id="cvs"  class="visual" width="800" height="600" style="border:1px solid black" ></canvas> 
+        <div class="right">
+            <div >空白鍵=發射</div>
+            <div >上下左右=移動</div>
+        </div>
+    </div>
+    <hr/>
+    <div class="footer">&copy 2019 林文耀</div>
+        <script>
+            class Rect{
+                //定義建構函式
+                constructor(x,y){
+                    this.x=x;
+                    this.y=y;
+                    this.vx=0;
+                    this.vy=-4;
+                }
+                // 定義方法
+                update(){   
+                    this.x+=this.vx; 
+                    this.y+=this.vy;
+                    // 回傳true 代表可以回收/刪除
+                    return this.x>cvs.width || this.x<0 || this.y>cvs.height || this.y<0;
+                }
+                draw(){
+                    ctx.fillRect(this.x-2,this.y-2,5,10);
+                }
+            }
+            
+            class 蠟筆小新{
+                constructor(x,y){
+                    this.x=cvs.width/2;
+                    this.y=cvs.height/2;
+                    this.size=150;
+                }
+                update(){
+                    if(key.space && circle%12.5==0){
+                        particles.push(new Rect(this.x, this.y-this.size/6));
+                    }
+                    let speed=3;
+                    if(key.left){
+                        this.x-=speed;
+                    }
+                    if(key.right){
+                        this.x+=speed;
+                    }
+                    if(key.top){
+                        this.y-=speed;
+                    }
+                    if(key.bottom){
+                        this.y+=speed;
+                    }
+                    return false;
+                }
+                draw(){
+                    ctx.drawImage(planeImg,
+                        this.x-this.size/2, this.y-this.size/2,
+                        this.size, this.size
+                    );
+                }
+            }
+            let cvs=document.querySelector("#cvs"); //取得canvas 標籤
+            let ctx=cvs.getContext("2d"); //取得 canvas 對應的context 物件
+            let circle=0; //回合數概念
+            let particles=[new 蠟筆小新()]; //陣列:用來裝會出現在畫面上的物件
+            function refresh(){ 
+                //更新資料
+                for(let i=0;i<particles.length;i++){
+                    let isDead=particles[i].update();
+                    if(isDead){
+                        particles.splice(i, 1);
+                        i--;
+                    }
+                } 
+                // 清空畫面
+                ctx.clearRect(0,0,cvs.width,cvs.height);
+                // 根據最新的資料重畫
+                for(let i=0;i<particles.length;i++){
+                    particles[i].draw();
+                }
+                //更新回合數
+                circle++;
+            }
+            // 載入圖片後啟動遊戲
+            let planeImg=new Image();
+            planeImg.src="蠟筆小新1.png";
+            planeImg.addEventListener("load",function(){
+            window.setInterval(refresh,10);//啟動遊戲
+            });            
+            // 加入鍵盤控制
+            let key={
+                left:false, top:false, right:false, bottom:false, space:false
+            };
+            document.addEventListener("keydown", function(e){
+                let code=e.keyCode;
+                if(code==37){// left
+                    key.left=true;
+                }else if(code==38){//top
+                    key.top=true;
+                }else if(code==39){// right
+                    key.right=true;                  
+                }else if(code==40){ //bottom
+                    key.bottom=true;                
+                }else if(code==32){ //射子彈
+                    key.space=true;
+                }
+            })
+            document.addEventListener("keyup", function(e){
+                let code=e.keyCode;
+                if(code==37){// left
+                    key.left=false;                 
+                }else if(code==38){//top
+                    key.top=false;                  
+                }else if(code==39){// right
+                    key.right=false;                 
+                }else if(code==40){ //bottom
+                    key.bottom=false;                
+                }else if(code==32){ 
+                    key.space=false;
+                }
+            })
+        </script>
+</body>
+</html>
